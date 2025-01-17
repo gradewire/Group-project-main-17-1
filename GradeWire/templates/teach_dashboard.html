@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/teach-style.css'%}">
+</head>
+<body>
+
+    
+        <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <h2>Teacher Dashboard</h2>
+            
+            <a href="{% url 'teachHome' %}" >Home</a>
+            <a href="{% url 'teacherProfile' %}" >Profile</a>
+            <a href="{% url 'teachStAttendance' %}" >Attendance</a>
+            <a href="{% url 'teachStMarks' %}" >Marks</a>
+            <a href="{% url 'teachStStats' %}">Stats</a>
+            <a href="{% url 'teachStDetails' %}" >Students</a>
+            <!-- Logout option at the very bottom (only for Desktop) -->
+            <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+           
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Welcome, Teacher</h1>
+            </div>
+            <!-- Home Section -->
+        
+
+            <!-- Profile Section -->
+           
+
+           <!-- Manage Attendance Section -->
+            
+
+            <!-- Manage Marks Section -->
+           
+
+            <!-- View Students Section -->
+           
+        </div>
+    
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+        
+    </script>
+</body>
+</html>

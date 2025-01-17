@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Stats</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/teach-style.css'%}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .form-container, .view-stats-container {
+          margin: 20px;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+    
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+    
+        table, th, td {
+          border: 1px solid #ccc;
+        }
+    
+        th, td {
+          padding: 10px;
+          text-align: center;
+        }
+    
+        canvas {
+          margin-top: 20px;
+        }
+      </style>
+    
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Teacher Dashboard</h2>
+        <a href="{% url 'teachHome' %}" >Home</a>
+        <a href="{% url 'teacherProfile' %}" >Profile</a>
+        <a href="{% url 'teachStAttendance' %}" >Attendance</a>
+        <a href="{% url 'teachStMarks' %}" >Marks</a>
+        <a href="{% url 'teachStStats' %}">Stats</a>
+        <a href="{% url 'StudentDetail' %}" >Students</a>
+        <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Form for selecting a student -->
+        <div class="form-container">
+            <h2>Select Student to View Stats</h2>
+            <select id="studentSelect">
+                <option value="">Select Student</option>
+                <option value="1">Student 1</option>
+                <option value="2">Student 2</option>
+            </select>
+            <button onclick="viewStats()">View Stats</button>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="view-stats-container" id="studentStats" style="display: none;">
+            <h2 id="studentName"></h2>
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>Exam</th>
+                        <th>Marks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <canvas id="performanceChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Hardcoded student data
+        const studentsData = {
+            1: {
+                name: "Student 1",
+                exams: ['Exam 1', 'Exam 2', 'Exam 3', 'Exam 4', 'Exam 5'],
+                marks: [85, 90, 75, 65, 95]
+            },
+            2: {
+                name: "Student 2",
+                exams: ['Exam 1', 'Exam 2', 'Exam 3', 'Exam 4', 'Exam 5'],
+                marks: [80, 88, 70, 60, 92]
+            }
+        };
+
+        let performanceChartInstance = null; // Global variable to hold the chart instance
+
+        function viewStats() {
+            const studentId = document.getElementById('studentSelect').value;
+
+            if (!studentId || !studentsData[studentId]) {
+                alert("Please select a valid student!");
+                return;
+            }
+
+            const student = studentsData[studentId];
+
+            // Update student name
+            document.getElementById('studentName').innerText = `Performance Overview for ${student.name}`;
+
+            // Populate the table with student data
+            const studentTableBody = document.getElementById('studentTable').getElementsByTagName('tbody')[0];
+            studentTableBody.innerHTML = ''; // Clear previous rows
+            student.exams.forEach((exam, index) => {
+                const row = studentTableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.innerText = exam;
+                cell2.innerText = student.marks[index];
+            });
+
+            // Show the stats section
+            document.getElementById('studentStats').style.display = 'block';
+
+            // Create the chart for the selected student
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+
+            // If there's an existing chart, destroy it before creating a new one
+            if (performanceChartInstance) {
+                performanceChartInstance.destroy();
+            }
+
+            // Initialize the chart for the selected student
+            performanceChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: student.exams,
+                    datasets: [{
+                        label: 'Marks Obtained',
+                        data: student.marks,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Teacher</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/admin-style.css'%}">
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="{% url 'adminHome' %}" onclick="showSection('home')">Home</a>
+        <a href="{% url 'ManageStudent' %}" >Manage Students</a>
+        <a href="{% url 'ManageTeacher' %}" >Manage Teachers</a>
+        <a href="{% url 'ManageCourse' %}" >Manage Courses</a>
+        <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+    </div>
+
+    <div class="content">
+        <h2>Edit Teacher</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div>
+                <label for="courseId">Course Id</label>
+                <input type="text" name="courseId" value="{{ course.course_id }}" placeholder="course Id" required>
+            </div>
+            
+            <div>
+                <label for="courseName">Email</label>
+                <input type="text" name="courseName" value="{{ course.course_name }}" placeholder="course Name" required>
+            </div>
+                     
+            <button type="submit">Update teacher</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'assets/js/admin-side.js' %}"></script>
+    
+</body>
+</html>

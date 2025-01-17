@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/teach-style.css'%}">
+</head>
+<body>
+        <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <h2>Teacher Dashboard</h2>
+            
+            <a href="{% url 'teachHome' %}" >Home</a>
+            <a href="{% url 'teacherProfile' %}" >Profile</a>
+            <a href="{% url 'teachStAttendance' %}" >Attendance</a>
+            <a href="{% url 'teachStMarks' %}" >Marks</a>
+            <a href="{% url 'teachStStats' %}">Stats</a>
+            <a href="{% url 'StudentDetail' %}" >Students</a>
+            <!-- Logout option at the very bottom (only for Desktop) -->
+            <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+           
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+    <div id="attendance" class="section">
+        <h2>Manage Attendance</h2>
+        <form id="attendanceForm">
+            <!-- Date Selection -->
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date"><br><br>
+
+            <!-- Attendance for Students -->
+             <div class="attendance-table">
+            <table >
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Hour 1</th>
+                        <th>Hour 2</th>
+                        <th>Hour 3</th>
+                        <th>Hour 4</th>
+                        <th>Hour 5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John Doe</td>
+                        <td><input type="checkbox" id="john-hour-1" name="attendance-john-hour-1"></td>
+                        <td><input type="checkbox" id="john-hour-2" name="attendance-john-hour-2"></td>
+                        <td><input type="checkbox" id="john-hour-3" name="attendance-john-hour-3"></td>
+                        <td><input type="checkbox" id="john-hour-4" name="attendance-john-hour-4"></td>
+                        <td><input type="checkbox" id="john-hour-5" name="attendance-john-hour-5"></td>
+                    </tr>
+                    <tr>
+                        <td>Jane Smith</td>
+                        <td><input type="checkbox" id="jane-hour-1" name="attendance-jane-hour-1"></td>
+                        <td><input type="checkbox" id="jane-hour-2" name="attendance-jane-hour-2"></td>
+                        <td><input type="checkbox" id="jane-hour-3" name="attendance-jane-hour-3"></td>
+                        <td><input type="checkbox" id="jane-hour-4" name="attendance-jane-hour-4"></td>
+                        <td><input type="checkbox" id="jane-hour-5" name="attendance-jane-hour-5"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            <button type="submit">Mark Attendance for Selected Date and Hours</button>
+
+            <div class="success-message" id="successMessage" style="display: none;">
+                Attendance marked successfully!
+            </div>
+        </form>
+    </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+        
+    </script>
+</body>
+</html>

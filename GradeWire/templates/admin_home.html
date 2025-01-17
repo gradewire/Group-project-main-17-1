@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/admin-style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f7fc;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        
+
+       
+        .stat-box p {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e90ff;
+        }
+
+         /* Chart container styles */
+    .chart-container {
+        display: flex; /* Enables flexbox layout */
+        flex-wrap: nowrap; /* Prevent wrapping */
+        gap: 20px; /* Space between the charts */
+        justify-content: space-between; /* Distribute space evenly */
+    }
+
+    /* Chart styles */
+    .chart {
+        flex: 1 1 50%; /* Each chart takes up 50% of the row */
+        max-width: 48%; /* Prevents charts from growing too large */
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .chart-container {
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .chart {
+            flex: 1 1 100%; /* Each chart takes full width on small screens */
+            max-width: 100%;
+        }
+    }
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 60px;
+            }
+
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="{% url 'adminHome' %}">Home</a>
+        <a href="{% url 'ManageStudent' %}">Manage Students</a>
+        <a href="{% url 'ManageTeacher' %}">Manage Teachers</a>
+        <a href="{% url 'ManageCourse' %}">Manage Courses</a>
+        <a href="{% url 'logout' %}" class="logout"  id="logoutButton">Logout</a>
+    </div>
+
+    <div class="content">
+        <h2>Welcome to the Admin Dashboard</h2>
+        <div class="stats-container">
+            <div class="stat-box">
+                <h3>Total Students</h3>
+                <p>{{ total_students }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Teachers</h3>
+                <p>{{ total_teachers }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Courses</h3>
+                <p>{{ total_courses }}</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <!-- Student-Teacher Ratio Doughnut Chart -->
+            <div class="chart">
+                <h3>Student-Teacher Ratio</h3>
+                <canvas id="studentTeacherChart" width=""></canvas>
+            </div>
+
+            <!-- Students Per Course Bar Chart -->
+            <div class="chart">
+                <h3>Students Per Course</h3>
+                <canvas id="studentsPerCourseChart" width=""></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for the Student-Teacher Ratio Chart
+        const chartData = {{ chart_data|safe }};
+        const studentTeacherCtx = document.getElementById('studentTeacherChart').getContext('2d');
+        new Chart(studentTeacherCtx, {
+            type: 'doughnut',
+            data: chartData
+        });
+
+        // Data for the Students Per Course Chart
+        const courseChartData = {{ course_chart_data|safe }};
+        const studentsPerCourseCtx = document.getElementById('studentsPerCourseChart').getContext('2d');
+        new Chart(studentsPerCourseCtx, {
+            type: 'bar',
+            data: {
+                labels: courseChartData.labels, // Course names
+                datasets: [{
+                    label: 'Number of Students',
+                    data: courseChartData.datasets[0].data, // Student counts
+                    backgroundColor: courseChartData.datasets[0].backgroundColor,
+                    borderColor: courseChartData.datasets[0].borderColor || 'rgba(0, 0, 0, 1)',
+                    borderWidth: courseChartData.datasets[0].borderWidth || 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Courses'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students'
+                        }
+                    }
+                }
+            }
+        });
+
+        
+
+    </script>
+    <script src="{% static 'assets/js/admin-side.js' %}"></script>
+    
+</body>
+</html>

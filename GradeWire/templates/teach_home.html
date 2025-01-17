@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/teach-style.css'%}">
+    <style>
+        .home-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-bottom: 40px;
+}
+.summary-box {
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+@media (max-width: 768px) {
+.summary-box h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+/* Value within Summary Box */
+.summary-box p {
+    font-size: 15px;
+    color: #2980b9;
+    font-weight: bold;
+}
+}
+    </style>
+</head>
+<body>
+        <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <h2>Teacher Dashboard</h2>
+            
+            <a href="{% url 'teachHome' %}" >Home</a>
+            <a href="{% url 'teacherProfile' %}" >Profile</a>
+            <a href="{% url 'teachStAttendance' %}" >Attendance</a>
+            <a href="{% url 'teachStMarks' %}" >Marks</a>
+            <a href="{% url 'teachStStats' %}">Stats</a>
+            <a href="{% url 'StudentDetail' %}" >Students</a>
+            <!-- Logout option at the very bottom (only for Desktop) -->
+            <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+           
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+           <!-- Home Section -->
+<div id="home" class="section active">
+    <h2>Welcome to Your Dashboard</h2>
+    <p>This is your teacher dashboard where you can manage attendance, marks, and view students. Use the navigation on the left to access different sections.</p>
+    
+    <div class="home-summary">
+        <div class="summary-box">
+            <h3>Total Students First Year</h3>
+            <p>{{ total_first_year }}</p>
+        </div>
+        <div class="summary-box">
+            <h3>Total Students Second Year</h3>
+            <p>{{ total_second_year }}</p>
+        </div>
+        <div class="summary-box">
+            <h3>Total Students Third Year</h3>
+            <p>{{ total_third_year }}</p>
+        </div>
+        <div class="summary-box">
+            <h3>Attendance Today - First Year</h3>
+            <p>40/50</p>
+        </div>
+        <div class="summary-box">
+            <h3>Attendance Today - Second Year</h3>
+            <p>40/50</p>
+        </div>
+        <div class="summary-box">
+            <h3>Attendance Today - Third Year</h3>
+            <p>40/50</p>
+        </div>
+        
+    </div>
+
+</div>
+
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+        
+    </script>
+</body>
+</html>
