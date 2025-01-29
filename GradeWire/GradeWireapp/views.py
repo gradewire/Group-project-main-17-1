@@ -214,31 +214,44 @@ def teacher_attendance_view(request):
 from django.shortcuts import render, redirect
 from .models import Student, Course
 from .forms import MarksForm
+from django.contrib.auth.decorators import login_required
 
+from django.http import JsonResponse
+@login_required
 def teacher_marks_view(request):
     selected_semester = request.GET.get('semester', 'semester-1')  # Default to 'semester-1'
 
     # Filter students based on the selected semester
     students = Student.objects.all()
-    
-    # Adjust filtering based on the class field (Class)
-    if selected_semester in ['semester-1', 'semester-2']:
-        students = students.filter(Class='1st Year')  # First-year students
-    elif selected_semester in ['semester-3', 'semester-4']:
-        students = students.filter(Class='2nd Year')  # Second-year students
-    else:
-        students = students.filter(Class='3rd Year')  # Third-year students
 
-    # Fetch all courses from the Course model
+    if selected_semester in ['semester-1', 'semester-2']:
+        students = students.filter(Class='1st Year')
+    elif selected_semester in ['semester-3', 'semester-4']:
+        students = students.filter(Class='2nd Year')
+    else:
+        students = students.filter(Class='3rd Year')
+
+    # If the request is AJAX, return the list of students as JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        student_list = [{'register_id': student.register_id, 'name': student.name} for student in students]
+        return JsonResponse(student_list, safe=False)
+
+    # If it's not an AJAX request, render the standard HTML page
     courses = Course.objects.all()
 
-    # Create the form with the semester passed to it
     form = MarksForm(request.POST or None, semester=selected_semester)
 
-    # If the form is valid, save the data
-    if request.method == 'POST' and form.is_valid():
-        form.save()  # Save the form data as a new Marks record
-        return redirect('teachStMarks')  # Redirect after successful save
+    # Check if the form is valid before saving
+    if request.method == 'POST':
+        print("Form data:", request.POST)  # Print submitted data for debugging
+
+        if form.is_valid():
+            print("Form is valid, saving data...")
+
+            form.save()  # Save the form data as a new Marks record
+            return redirect('teachStMarks')  # Redirect after successful save
+        else:
+            print("Form errors:", form.errors)  # Log form validation errors
 
     return render(request, 'teach_st_marks.html', {
         'form': form,
@@ -246,6 +259,7 @@ def teacher_marks_view(request):
         'students': students,
         'courses': courses,
     })
+
 
 
 def teacher_stats_view(request):
@@ -371,8 +385,7 @@ def student_profile_view(request):
 def student_grades_view(request):
     return render(request,'stdnt_grades.html')
 
-def student_schedule_view(request):
-    return render(request,'stdnt_schedule.html')
+
 
 def student_home_view(request):
     return render(request,'stdnt_home.html')

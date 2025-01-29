@@ -27,7 +27,6 @@ urlpatterns = [
     path('student-profile/', views.student_profile_view,name='studentProfile'),
     path('student-attendance/', views.student_attendance_view,name='studentAttendance'),
     path('student-grades/', views.student_grades_view,name='studentGrades'),
-    path('student-schedule/', views.student_schedule_view,name='studentSchedule'),
     path('student-home/', views.student_home_view,name='studentHome'),
     path('manage-student/', views.manage_student_view,name='ManageStudent'),
     path('manage-teacher/', views.manage_teacher_view,name='ManageTeacher'),

@@ -63,13 +63,12 @@ class Course(models.Model):
 
 
 class Marks(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    semester = models.CharField(max_length=20)  # e.g., 'semester-1', 'semester-2'
-    exam_name = models.CharField(max_length=50)  # e.g., 'internal-1', 'model', etc.
-    subject = models.CharField(max_length=100)  # Using course name as subject
-    internal_marks = models.IntegerField()
-    external_marks = models.IntegerField()
+    semester = models.CharField(max_length=20)
+    registerId = models.ForeignKey(Student, on_delete=models.CASCADE)
+    exam_name = models.CharField(max_length=50)
+    subject = models.ForeignKey(Course, on_delete=models.CASCADE)
+    internalMarks = models.PositiveIntegerField(default=0)
+    externalMarks = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        # Display the student register_id and subject in the mark's string representation
-        return f"{self.student.register_id} - {self.subject} ({self.semester})"
+        return f"{self.registerId} - {self.semester} - {self.subject}"
