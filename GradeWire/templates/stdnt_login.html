@@ -108,26 +108,30 @@
     </style>
 </head>
 <body>
-    <!-- Student Login Page -->
     <div class="form-container">
         <h2>Student Login</h2>
-        <form action="/student-dashboard/" method="POST">
+        <form action="" method="POST">
             {% csrf_token %}
+            
             <label for="register_id">REGISTER NUMBER</label>
             <input type="text" id="register_id" placeholder="REGISTER NUMBER" name="register_id" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" placeholder="Password" name="password" required>
+
             <button type="submit" class="btn">Login</button>
-
         </form>
 
-            <div class="extra-links">
-                <a href="/forgot-password">Forgot Password?</a> |
-                <a href="{% url 'studentRegister' %}">Register</a>
-            </div>
-        </form>
+        <div class="extra-links">
+            <a href="/forgot-password">Forgot Password?</a> |
+            <a href="{% url 'studentRegister' %}">Register</a>
+        </div>
+        {% if messages %}
+{% for message in messages %}
+  <p style="color:red">{{ message }}</p>
+{% endfor %}
+{% endif %}
     </div>
-
 </body>
+
 </html>

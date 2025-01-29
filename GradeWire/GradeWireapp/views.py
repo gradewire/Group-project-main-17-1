@@ -10,9 +10,6 @@ from django.contrib.auth.models import Group
 # Create your views here.
 def index(request):
     return render(request,'index.html')
-def studentLogin(request):
-
-    return render(request,'stdnt_login.html')
 def student_dashboard_view(request):
     return render(request,'stdnt_dashboard.html')
 
@@ -39,7 +36,7 @@ def Teacher_signup_view(request):
         if teacherForm.is_valid():
             teacher=teacherForm.save()
             my_teacher_group = Group.objects.get_or_create(name='TEACHER')
-        return HttpResponseRedirect('teacherlogin')
+        return redirect('teacherLogin')
     return render(request,'teach_register.html',context=mydict)
 
 def is_teacher(user):
@@ -51,27 +48,26 @@ from .models import Student
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Teacher  # Import the Teacher model
+from django.contrib.auth.hashers import check_password
 
 def teacherLogin(request):
     if request.method == 'POST':
         username = request.POST['teacher_id']
         password = request.POST['password']
-        
-        # Authenticate the user with the username (username could be the teacher_id)
-        user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            # Check if the student_id exists in the Student model
-            try:
-                teacher = Teacher.objects.get(teacher_id=username)
-                # If the student exists, log the user in
-                login(request, user)
-                return redirect('student_dashboard')
-            except Teacher.DoesNotExist:
-                # If no Teacher entry is found for this teacher_id
-                messages.error(request, 'No student account found for this ID or not registered as a teacher.')
-        else:
-            messages.error(request, 'Invalid credentials.')
+        try:
+            teacher = Teacher.objects.get(teacher_id=username)
+            
+            if teacher.password ==password:  # Verify password securely
+                request.session['teacher_id'] = teacher.id  # Store teacher ID in session
+                return redirect('teacherDashboard')
+            else:
+                messages.error(request, 'Invalid credentials.')
+        except Teacher.DoesNotExist:
+            messages.error(request, 'No teacher account found for this ID.')
 
     return render(request, 'teach_login.html')
 
@@ -87,11 +83,11 @@ from .forms import StudentForm
 def Student_signup_view(request):
     if request.method == 'POST':
         # Create the form instance with POST data and file data (if any)
-        studentForm = StudentForm(request.POST, request.FILES)
+        studentForm = forms.StudentForm(request.POST, request.FILES)
         
         if studentForm.is_valid():
             studentForm.save()
-            return redirect('studentlogin')  # Make sure 'studentlogin' is a valid URL name in your urls.py
+            return redirect('studentLogin')  # Make sure 'studentlogin' is a valid URL name in your urls.py
         else:
             return render(request, 'stdnt_register.html', {'studentForm': studentForm})
 
@@ -104,17 +100,30 @@ def Student_signup_view(request):
 def is_student(user):
     return user.group.filter(name='STUDENT').exists()
 
-def studentLogin(request):
-    if request.method=='POST':
-      username=request.POST['register_id']
-      password = request.POST['password']
-      user = authenticate(request,username = username,password = password)
 
-      if user is not None:
-          login(request, user)
-          return redirect('studentDashbord')
-      else:
-          return render(request,'stdnt_login.html',{'error':'Invalid credentials'} )
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from .models import Student  # Import the Student model
+from django.contrib.auth.hashers import check_password
+
+def studentLogin(request):
+    if request.method == 'POST':
+        username = request.POST.get('register_id')
+        password = request.POST.get('password')
+
+        try:
+            student = Student.objects.get(register_id=username)
+
+            # Directly compare plain-text passwords
+            if student.password == password:  
+                request.session['register_id'] = student.id  
+                return redirect('studentDashboard')
+            else:
+                messages.error(request, 'Invalid credentials.')
+        except Student.DoesNotExist:
+            messages.error(request, 'No teacher account found for this ID.')
+
     return render(request, 'stdnt_login.html')
 
 @login_required
@@ -155,11 +164,89 @@ def admin_dashboard_view(request):
 def teacher_profile_view(request):
     return render(request,'teacher_profile.html')
 
+from django.shortcuts import render
+from .models import Student, Attendance
+
 def teacher_attendance_view(request):
-    return render(request,'teach_st_attendance.html')
+    if request.method == 'POST':
+        # Get the selected date from the form
+        selected_date = request.POST.get('date')
+        if not selected_date:
+            return render(request, 'teach_st_attendance.html', {'error': 'Date is required'})
+
+        # Loop through students and mark attendance
+        students = Student.objects.all()
+        for student in students:
+            for hour in range(1, 6):  # Loop through hours 1 to 5
+                is_present = request.POST.get(f'attendance-{student.register_id}-hour-{hour}') == 'on'
+                
+                # Ensure that attendance is created or updated for each student, hour, and date
+                attendance, created = Attendance.objects.update_or_create(
+                    student=student,
+                    date=selected_date,
+                    hour=hour,
+                    defaults={'is_present': is_present},
+                )
+
+        # Update full-day attendance count for all students
+        for student in students:
+            student.update_full_day_attendance()
+
+        # After processing the attendance, pass a success flag and the updated context to the template
+        return render(request, 'teach_st_attendance.html', {
+            'students': students,
+            'hours': range(1, 6),
+            'success': True  # Show success message
+        })
+    
+    # For GET requests, render the attendance form
+    students = Student.objects.all()
+    context = {
+        'students': students,
+        'hours': range(1, 6),  # Hours 1 to 5
+    }
+    return render(request, 'teach_st_attendance.html', context)
+
+
+
+
+
+from django.shortcuts import render, redirect
+from .models import Student, Course
+from .forms import MarksForm
 
 def teacher_marks_view(request):
-    return render(request,'teach_st_marks.html')
+    selected_semester = request.GET.get('semester', 'semester-1')  # Default to 'semester-1'
+
+    # Filter students based on the selected semester
+    students = Student.objects.all()
+    
+    # Adjust filtering based on the class field (Class)
+    if selected_semester in ['semester-1', 'semester-2']:
+        students = students.filter(Class='1st Year')  # First-year students
+    elif selected_semester in ['semester-3', 'semester-4']:
+        students = students.filter(Class='2nd Year')  # Second-year students
+    else:
+        students = students.filter(Class='3rd Year')  # Third-year students
+
+    # Fetch all courses from the Course model
+    courses = Course.objects.all()
+
+    # Create the form with the semester passed to it
+    form = MarksForm(request.POST or None, semester=selected_semester)
+
+    # If the form is valid, save the data
+    if request.method == 'POST' and form.is_valid():
+        form.save()  # Save the form data as a new Marks record
+        return redirect('teachStMarks')  # Redirect after successful save
+
+    return render(request, 'teach_st_marks.html', {
+        'form': form,
+        'selected_semester': selected_semester,
+        'students': students,
+        'courses': courses,
+    })
+
 
 def teacher_stats_view(request):
     return render(request,'teach_st_stats.html')

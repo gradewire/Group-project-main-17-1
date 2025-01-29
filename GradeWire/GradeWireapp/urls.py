@@ -5,13 +5,14 @@ urlpatterns = [
     path('', views.index,name='index'),
     path('logout/', views.logout_view, name='logout'),  # Logout URL
 
-    path('tregister/teacherlogin/', LoginView.as_view(template_name='teach_login.html'),name='teacherLogin'),
+    path('teacherlogin/', views.teacherLogin,name='teacherLogin'),
     path('tregister/', views.Teacher_signup_view,name='teacherRegister'),
     path('sregister/', views.Student_signup_view,name='studentRegister'),
-    path('studentlogin/', LoginView.as_view(template_name='stdnt_login.html'),name='studentlogin'),
+
+    path('studentlogin/', views.studentLogin, name='studentLogin'),
     path('student-dashboard/', views.student_dashboard_view,name='studentDashboard'),
     path('teacher-dashboard/', views.teacher_dashboard_view,name='teacherDashboard'),
-    path('adminlogin/', LoginView.as_view(template_name='admin_login.html'),name='adminlogin'),
+    path('adminlogin/', views.admin_login,name='adminlogin'),
     path('admin-dashboard/', views.admin_dashboard_view,name='adminDashboard'),
     path('teacher-profile/', views.teacher_profile_view,name='teacherProfile'),
     path('teacher-attendance/', views.teacher_attendance_view,name='teachStAttendance'),
