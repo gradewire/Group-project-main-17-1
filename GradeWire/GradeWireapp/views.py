@@ -72,7 +72,7 @@ def teacherLogin(request):
     return render(request, 'teach_login.html')
 
 
-@login_required
+# @login_required
 def teacher_dashboard_view(request):
     return render(request,'teach_dashboard.html')
     
@@ -126,7 +126,7 @@ def studentLogin(request):
 
     return render(request, 'stdnt_login.html')
 
-@login_required
+# @login_required
 def student_dashboard_view(request):
     return render(request,'stdnt_dashboard.html')
 
@@ -217,9 +217,9 @@ from .forms import MarksForm
 from django.contrib.auth.decorators import login_required
 
 from django.http import JsonResponse
-@login_required
+# @login_required
 def teacher_marks_view(request):
-    selected_semester = request.GET.get('semester', 'semester-1')  # Default to 'semester-1'
+    selected_semester = request.GET.get('semester', 'semester-1')
 
     # Filter students based on the selected semester
     students = Student.objects.all()
@@ -231,9 +231,10 @@ def teacher_marks_view(request):
     else:
         students = students.filter(Class='3rd Year')
 
+    print(students)
     # If the request is AJAX, return the list of students as JSON
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        student_list = [{'register_id': student.register_id, 'name': student.name} for student in students]
+        student_list = [{'register_id': student.register_id, 'name': student.name,'id':student.id} for student in students]
         return JsonResponse(student_list, safe=False)
 
     # If it's not an AJAX request, render the standard HTML page
@@ -243,12 +244,15 @@ def teacher_marks_view(request):
 
     # Check if the form is valid before saving
     if request.method == 'POST':
-        print("Form data:", request.POST)  # Print submitted data for debugging
+        print("Form data:", request.POST)  
+        st=get_object_or_404(Student,id=request.POST.get('registerId'))
 
         if form.is_valid():
             print("Form is valid, saving data...")
 
-            form.save()  # Save the form data as a new Marks record
+            data=form.save(commit=False)
+            data.registerId=st
+            data.save()
             return redirect('teachStMarks')  # Redirect after successful save
         else:
             print("Form errors:", form.errors)  # Log form validation errors

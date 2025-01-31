@@ -64,7 +64,7 @@ class Course(models.Model):
 
 class Marks(models.Model):
     semester = models.CharField(max_length=20)
-    registerId = models.ForeignKey(Student, on_delete=models.CASCADE)
+    registerId = models.ForeignKey(Student, on_delete=models.CASCADE,null=True,blank=True)
     exam_name = models.CharField(max_length=50)
     subject = models.ForeignKey(Course, on_delete=models.CASCADE)
     internalMarks = models.PositiveIntegerField(default=0)

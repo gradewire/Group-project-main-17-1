@@ -29,7 +29,7 @@ from .models import Marks, Student, Course
 class MarksForm(forms.ModelForm):
     class Meta:
         model = Marks
-        fields = ['semester', 'registerId', 'exam_name', 'subject', 'internalMarks', 'externalMarks']
+        fields = ['semester', 'exam_name', 'subject', 'internalMarks', 'externalMarks']
 
     SEMESTER_CHOICES = [
         ('semester-1', 'Semester 1'),
@@ -48,7 +48,6 @@ class MarksForm(forms.ModelForm):
 
     semester = forms.ChoiceField(choices=SEMESTER_CHOICES)
     exam_name = forms.ChoiceField(choices=EXAM_CHOICES)
-    registerId = forms.ModelChoiceField(queryset=Student.objects.all(), required=True)
     subject = forms.ModelChoiceField(queryset=Course.objects.all(), required=True)
     internalMarks = forms.IntegerField(min_value=0, max_value=100, required=True)
     externalMarks = forms.IntegerField(min_value=0, max_value=100, required=True)
@@ -61,15 +60,15 @@ class MarksForm(forms.ModelForm):
         if semester:
             self.fields['semester'].initial = semester
 
-        # Filter the registerId (students) based on the semester
-        if semester:
-            if semester in ['semester-1', 'semester-2']:
-                self.fields['registerId'].queryset = Student.objects.filter(Class='1st Year')
-            elif semester in ['semester-3', 'semester-4']:
-                self.fields['registerId'].queryset = Student.objects.filter(Class='2nd Year')
-            else:
-                self.fields['registerId'].queryset = Student.objects.filter(Class='3rd Year')
+        # # Filter the registerId (students) based on the semester
+        # if semester:
+        #     if semester in ['semester-1', 'semester-2']:
+        #         self.fields['registerId'].queryset = Student.objects.filter(Class='1st Year')
+        #     elif semester in ['semester-3', 'semester-4']:
+        #         self.fields['registerId'].queryset = Student.objects.filter(Class='2nd Year')
+        #     else:
+        #         self.fields['registerId'].queryset = Student.objects.filter(Class='3rd Year')
 
-            # Optionally filter subjects based on semester (if needed)
-            self.fields['subject'].queryset = Course.objects.all()  # Adjust if necessary
+        #     # Optionally filter subjects based on semester (if needed)
+        #     self.fields['subject'].queryset = Course.objects.all()  # Adjust if necessary
 
