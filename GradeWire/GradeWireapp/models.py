@@ -60,13 +60,30 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
     
+class Subject(models.Model):
+    SEMESTER_CHOICES = [
+        ('semester-1', 'Semester 1'),
+        ('semester-2', 'Semester 2'),
+        ('semester-3', 'Semester 3'),
+        ('semester-4', 'Semester 4'),
+        ('semester-5', 'Semester 5'),
+        ('semester-6', 'Semester 6'),
+    ]
 
+    semester = models.CharField(max_length=20, choices=SEMESTER_CHOICES)
+    subject_code = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=255)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name} ({self.subject_code}) - {self.course.course_name}"
 
 class Marks(models.Model):
     semester = models.CharField(max_length=20)
     registerId = models.ForeignKey(Student, on_delete=models.CASCADE,null=True,blank=True)
     exam_name = models.CharField(max_length=50)
-    subject = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    subject =models.ForeignKey(Subject, on_delete=models.CASCADE)
     internalMarks = models.PositiveIntegerField(default=0)
     externalMarks = models.PositiveIntegerField(default=0)
 

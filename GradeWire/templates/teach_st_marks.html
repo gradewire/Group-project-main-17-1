@@ -8,7 +8,24 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/teach-style.css' %}">
 </head>
 <body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+    <!-- Sidebar -->
+    <div class="sidebar">
 
+        <h2>Teacher Dashboard</h2>
+        
+        <a href="{% url 'teachHome' %}" >Home</a>
+        <a href="{% url 'teacherProfile' %}" >Profile</a>
+        <a href="{% url 'teachStAttendance' %}" >Attendance</a>
+        <a href="{% url 'teachStMarks' %}" >Marks</a>
+        <a href="{% url 'teachStStats' %}">Stats</a>
+        <a href="{% url 'StudentDetail' %}" >Students</a>
+        <!-- Logout option at the very bottom (only for Desktop) -->
+        <a href="{% url 'logout' %}" class="logout" id="logoutButton">Logout</a>
+       
+    </div>
+   
+    <!-- Main Content -->
     <div class="main-content">
         <h2>Manage Marks</h2>
 
@@ -75,7 +92,14 @@
             <button type="submit">Submit Marks</button>
         </form>
     </div>
-
+</div>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+    }
+    
+</script>
     <!-- JavaScript to handle dynamic population and form validation -->
     <script>
         function getStudentsBySemester() {

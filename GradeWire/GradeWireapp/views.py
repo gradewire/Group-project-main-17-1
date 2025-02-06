@@ -146,6 +146,14 @@ def manage_course_view(request):
     courses = models.Course.objects.all()  # Get all courses from the database
     return render(request,'admin_mg_course.html', {'courses': courses})
 
+def manage_subject_view(request):
+    subjects = models.Subject.objects.all()
+    courses = models.Course.objects.all()  # Get all courses from the database
+    semester_choices = Subject.SEMESTER_CHOICES
+      # Get all courses from the database
+    return render(request,'admin_mg_subject.html', {'subjects': subjects ,'courses': courses ,'semester_choices': semester_choices})
+
+
 def afterlogin_view(request):
     if is_teacher(request.user):
         accountapproval=models.Teacher.objects.all().filter(user_id=request.user.id,status=True)
@@ -382,6 +390,42 @@ def add_course(request):
 
     return redirect('adminMgCourse') 
 
+from .models import Subject
+
+def admin_mg_subject_view(request):
+    courses=Course.objects.all()
+    return render(request,'admin_mg_subject.html',{'courses':courses})
+
+
+def add_subject(request):
+    # Fetch all courses for the dropdown
+    courses = Course.objects.all()
+
+    if request.method == 'POST':
+        # Get the data from the form submission
+        name = request.POST.get('name')
+        subject_code = request.POST.get('subject_code')
+        course_id = request.POST.get('course')  # Get the selected course ID
+        semester = request.POST.get('semester')
+        # Retrieve the selected course object using the course_id
+        try:
+            course = Course.objects.get(course_id=course_id)  # Use course_id instead of id
+        except Course.DoesNotExist:
+            return HttpResponse("Error: The selected course does not exist.")
+
+        # Validate that the necessary data exists
+        if name and subject_code and course and semester:
+            # Create and save the new subject associated with the selected course
+            new_subject = Subject(name=name, subject_code=subject_code, course=course,semester = semester)
+            new_subject.save()
+
+            return redirect('adminMgSubject')  # Redirect to the manage subject page
+        else:
+            return HttpResponse("Error: Subject name, code, or course is missing.")
+
+    # If the request is GET, pass the list of courses to the template
+    return render(request, 'admin_mg_subject.html', {'courses': courses})
+
 
 def student_profile_view(request):
     return render(request,'stdnt_profile.html')
@@ -499,6 +543,30 @@ def delete_course(request, course_no):
     course.delete()
     
     return redirect('ManageCourse')  # Redirect back to the course management page
+
+def edit_subject(request, subject_no):
+    subject = get_object_or_404(Subject, id=subject_no)
+    
+    if request.method == "POST":
+        subject.subject_code = request.POST.get('SubjectCode')
+
+        subject.name = request.POST.get('SubjectName')
+       
+        
+        # Save the updated coourse
+        subject.save()
+        
+        return redirect('ManageSubject')  # Redirect back to the course management page
+    
+    return render(request, 'edit_subject.html', {'subject': subject})
+
+def delete_subject(request, subject_no):
+    subject = get_object_or_404(Course, id=subject_no)
+    
+    subject.delete()
+    
+    return redirect('ManageSubject')  # Redirect back to the course management page
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Student

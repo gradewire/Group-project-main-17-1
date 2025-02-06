@@ -24,7 +24,7 @@ from django import forms
 from .models import Marks, Student, Course
 
 from django import forms
-from .models import Marks, Student, Course
+from .models import Marks, Student, Course,Subject
 
 class MarksForm(forms.ModelForm):
     class Meta:
@@ -54,6 +54,8 @@ class MarksForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         semester = kwargs.pop('semester', None)  # Get semester if passed
+        course_id = kwargs.get('data', {}).get('course')  # Get course ID from form data
+
         super(MarksForm, self).__init__(*args, **kwargs)
 
         # Set initial value for semester
@@ -71,4 +73,11 @@ class MarksForm(forms.ModelForm):
 
         #     # Optionally filter subjects based on semester (if needed)
         #     self.fields['subject'].queryset = Course.objects.all()  # Adjust if necessary
+            # Optionally filter courses based on semester (if needed)
+            self.fields['course'].queryset = Course.objects.all()  # Adjust if necessary
+              # **Filter subjects based on selected course**
+        if course_id:
+            self.fields['subject'].queryset = Subject.objects.filter(course_id=course_id)
+        else:
+            self.fields['subject'].queryset = Subject.objects.none()  # Default to empty queryset
 
