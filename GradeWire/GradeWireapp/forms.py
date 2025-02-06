@@ -24,7 +24,7 @@ from django import forms
 from .models import Marks, Student, Course
 
 from django import forms
-from .models import Marks, Student, Course
+from .models import Marks, Student, Course,Subject
 
 class MarksForm(forms.ModelForm):
     class Meta:
@@ -49,12 +49,15 @@ class MarksForm(forms.ModelForm):
     semester = forms.ChoiceField(choices=SEMESTER_CHOICES)
     exam_name = forms.ChoiceField(choices=EXAM_CHOICES)
     registerId = forms.ModelChoiceField(queryset=Student.objects.all(), required=True)
-    subject = forms.ModelChoiceField(queryset=Course.objects.all(), required=True)
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), required=True)
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(), required=True)
     internalMarks = forms.IntegerField(min_value=0, max_value=100, required=True)
     externalMarks = forms.IntegerField(min_value=0, max_value=100, required=True)
 
     def __init__(self, *args, **kwargs):
         semester = kwargs.pop('semester', None)  # Get semester if passed
+        course_id = kwargs.get('data', {}).get('course')  # Get course ID from form data
+
         super(MarksForm, self).__init__(*args, **kwargs)
 
         # Set initial value for semester
@@ -70,6 +73,11 @@ class MarksForm(forms.ModelForm):
             else:
                 self.fields['registerId'].queryset = Student.objects.filter(Class='3rd Year')
 
-            # Optionally filter subjects based on semester (if needed)
-            self.fields['subject'].queryset = Course.objects.all()  # Adjust if necessary
+            # Optionally filter courses based on semester (if needed)
+            self.fields['course'].queryset = Course.objects.all()  # Adjust if necessary
+              # **Filter subjects based on selected course**
+        if course_id:
+            self.fields['subject'].queryset = Subject.objects.filter(course_id=course_id)
+        else:
+            self.fields['subject'].queryset = Subject.objects.none()  # Default to empty queryset
 

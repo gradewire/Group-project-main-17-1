@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'assets/css/stdnt-style.css'%}">
 </head>
 <body>
-  <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div>
+  <div class="menu-toggle" onclick="toggleSidebar()">☰ Menu</div> 
   <!-- Sidebar -->
   <div class="sidebar">
     <h3>Student Dashboard</h3>
@@ -24,21 +24,12 @@
   <!-- Main Content -->
   <div class="main">
     <!-- Home Section -->
-    
-
-    <!-- Profile Section -->
-    
-
-    <!-- Attendance Section -->
-   
-
-    <!-- Grades Section -->
-    
-
-    <!-- Schedule Section -->
+      <div class="header">
+          <h1>Welcome, Admin</h1>    
+  </div>
 
 
-    <!-- Logout Section -->
+
    
   </div>
 
@@ -47,10 +38,7 @@
       function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             sidebar.classList.toggle('active');
-        }
-    // Sidebar Navigation
-    
-
+        }    
    
   </script>
 </body>

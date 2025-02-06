@@ -24,6 +24,8 @@ urlpatterns = [
     path('admin-student/', views.admin_mg_student_view,name='adminMgStudent'),
     path('admin-teacher/', views.admin_mg_teacher_view,name='adminMgTeacher'),
     path('admin-course/', views.admin_mg_course_view,name='adminMgCourse'),
+    path('admin-subject/', views.admin_mg_subject_view,name='adminMgSubject'),
+
     path('student-profile/', views.student_profile_view,name='studentProfile'),
     path('student-attendance/', views.student_attendance_view,name='studentAttendance'),
     path('student-grades/', views.student_grades_view,name='studentGrades'),
@@ -31,6 +33,7 @@ urlpatterns = [
     path('manage-student/', views.manage_student_view,name='ManageStudent'),
     path('manage-teacher/', views.manage_teacher_view,name='ManageTeacher'),
     path('manage-course/', views.manage_course_view,name='ManageCourse'),
+    path('manage-subject/', views.manage_subject_view,name='ManageSubject'),
 
     path('student-details/', views.detail_student_view,name='StudentDetail'),
     path('edit-student/<int:student_id>/', views.edit_student, name='edit_student'),
@@ -39,8 +42,11 @@ urlpatterns = [
     path('delete-teacher/<int:teacher_no>/', views.delete_teacher, name='delete_teacher'),
     path('add-course/', views.add_course, name='add_course'),
     path('delete-course/<int:course_no>/', views.delete_course, name='delete_course'),
-
     path('edit-course/<int:course_no>/', views.edit_course, name='edit_course'),
+
+    path('add-subject/', views.add_subject, name='add_subject'),
+    path('delete-subject/<int:suject_no>/', views.delete_subject, name='delete_subject'),
+    path('edit-subject/<int:subject_no>/', views.edit_subject, name='edit_subject'),
     path('add-student/', views.add_student, name='add_student'),
     path('add-teacher/', views.add_teacher, name='add_teacher'),
 
