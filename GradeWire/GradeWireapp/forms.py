@@ -77,5 +77,3 @@ class MarksForm(forms.ModelForm):
             self.fields['subject'].queryset = Subject.objects.filter(course_id=course_id, semester=semester)
         else:
             self.fields['subject'].queryset = Subject.objects.none()
-
-

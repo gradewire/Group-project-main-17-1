@@ -72,7 +72,7 @@ def teacherLogin(request):
     return render(request, 'teach_login.html')
 
 
-@login_required
+# @login_required
 def teacher_dashboard_view(request):
     return render(request,'teach_dashboard.html')
     
@@ -126,7 +126,7 @@ def studentLogin(request):
 
     return render(request, 'stdnt_login.html')
 
-@login_required
+# @login_required
 def student_dashboard_view(request):
     return render(request,'stdnt_dashboard.html')
 
@@ -225,7 +225,6 @@ from .forms import MarksForm
 from django.contrib.auth.decorators import login_required
 
 from django.http import JsonResponse
-from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .models import Student, Course, Subject, Marks
 from .forms import MarksForm
@@ -279,6 +278,7 @@ def teacher_marks_view(request):
         'courses': courses,
         'subjects': subjects,  # Pass filtered subjects
     })
+
 
 
 
