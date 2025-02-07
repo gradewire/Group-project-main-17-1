@@ -64,12 +64,22 @@
             </select><br><br>
 
             <!-- Subject Selection -->
-            <label for="subject">Select Subject:</label>
-            <select id="subject" name="subject" required>
-                <option value="">Select Subject</option>
+            <label for="course">Select Course:</label>
+            <select id="course" name="course" required>
+                <option value="">Select Course</option>
                 {% for course in courses %}
-                    <option value="{{ course.id }}" {% if course.id == form.subject.value %}selected{% endif %}>
+                    <option value="{{ course.id }}" {% if course.id == form.course.value %}selected{% endif %}>
                         {{ course.course_name }}
+                    </option>
+                {% endfor %}
+            </select><br><br>
+
+            <label for="subject">Select Course:</label>
+            <select id="subject" name="subject" required>
+                <option value="">Select Course</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject.id }}" {% if subject.id == form.subject.value %}selected{% endif %}>
+                        {{ subject.name }}
                     </option>
                 {% endfor %}
             </select><br><br>
@@ -110,7 +120,7 @@
             var semester = document.getElementById('semester').value;
     
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/teacher-marks/?semester=" + semester, true);
+            xhr.open("GET", "{% url 'teacher_marks_view' %}?semester=" + semester, true);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     
             xhr.onload = function() {
@@ -128,8 +138,8 @@
     
                     students.forEach(function(student) {
                         var option = document.createElement('option');
-                        option.value = student.id;  // student.id should match the id from the database
-                        option.text = student.registerId + ' - ' + student.name;
+                        option.value = student.register_id;  // Use correct key from JSON response
+                        option.text = student.register_id + ' - ' + student.name;
                         registerIdDropdown.appendChild(option);
                     });
                 } else {
@@ -140,6 +150,7 @@
             xhr.send();
         }
     </script>
+    
     
 
 </body>

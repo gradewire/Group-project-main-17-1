@@ -60,6 +60,7 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
     
+
 class Subject(models.Model):
     SEMESTER_CHOICES = [
         ('semester-1', 'Semester 1'),
@@ -70,13 +71,15 @@ class Subject(models.Model):
         ('semester-6', 'Semester 6'),
     ]
 
-    semester = models.CharField(max_length=20, choices=SEMESTER_CHOICES)
+    semester = models.CharField(max_length=20, choices=SEMESTER_CHOICES, default='semester-1')
     subject_code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=255)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name} ({self.subject_code}) - {self.course.course_name}"
+
+    
 
 class Marks(models.Model):
     semester = models.CharField(max_length=20)

@@ -45,8 +45,8 @@ urlpatterns = [
     path('edit-course/<int:course_no>/', views.edit_course, name='edit_course'),
 
     path('add-subject/', views.add_subject, name='add_subject'),
-    path('delete-subject/<int:suject_no>/', views.delete_subject, name='delete_subject'),
-    path('edit-subject/<int:subject_no>/', views.edit_subject, name='edit_subject'),
+    path('delete-subject/<int:subject_no>/', views.delete_subject, name='delete_subject'),
+    path('edit_subject/<int:subject_no>/', views.edit_subject, name='edit_subject'),
     path('add-student/', views.add_student, name='add_student'),
     path('add-teacher/', views.add_teacher, name='add_teacher'),
 

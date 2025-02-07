@@ -225,13 +225,17 @@ from .forms import MarksForm
 from django.contrib.auth.decorators import login_required
 
 from django.http import JsonResponse
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from .models import Student, Course, Subject, Marks
+from .forms import MarksForm
 @login_required
 def teacher_marks_view(request):
-    selected_semester = request.GET.get('semester', 'semester-1')  # Default to 'semester-1'
+    selected_semester = request.GET.get('semester', 'semester-1')  # Default semester
+    selected_course = request.GET.get('course', None)  # Get selected course (if any)
 
     # Filter students based on the selected semester
     students = Student.objects.all()
-
     if selected_semester in ['semester-1', 'semester-2']:
         students = students.filter(Class='1st Year')
     elif selected_semester in ['semester-3', 'semester-4']:
@@ -239,15 +243,23 @@ def teacher_marks_view(request):
     else:
         students = students.filter(Class='3rd Year')
 
-    # If the request is AJAX, return the list of students as JSON
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    # Handle AJAX request for filtering students
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 'course' not in request.GET:
         student_list = [{'register_id': student.register_id, 'name': student.name} for student in students]
         return JsonResponse(student_list, safe=False)
 
-    # If it's not an AJAX request, render the standard HTML page
-    courses = Course.objects.all()
+    # Filter subjects based on selected course and semester
+    subjects = Subject.objects.none()  # Default to empty queryset
+    if selected_course and selected_semester:
+        subjects = Subject.objects.filter(course_id=selected_course, semester=selected_semester)
 
-    form = MarksForm(request.POST or None, semester=selected_semester)
+    # Handle AJAX request for filtering subjects dynamically
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 'course' in request.GET:
+        subject_list = [{'id': subject.id, 'name': subject.name} for subject in subjects]
+        return JsonResponse(subject_list, safe=False)
+
+    courses = Course.objects.all()
+    form = MarksForm(request.POST or None, semester=selected_semester, data=request.POST)
 
     # Check if the form is valid before saving
     if request.method == 'POST':
@@ -255,8 +267,7 @@ def teacher_marks_view(request):
 
         if form.is_valid():
             print("Form is valid, saving data...")
-
-            form.save()  # Save the form data as a new Marks record
+            form.save()
             return redirect('teachStMarks')  # Redirect after successful save
         else:
             print("Form errors:", form.errors)  # Log form validation errors
@@ -266,6 +277,7 @@ def teacher_marks_view(request):
         'selected_semester': selected_semester,
         'students': students,
         'courses': courses,
+        'subjects': subjects,  # Pass filtered subjects
     })
 
 
@@ -390,7 +402,8 @@ from .models import Subject
 
 def admin_mg_subject_view(request):
     courses=Course.objects.all()
-    return render(request,'admin_mg_subject.html',{'courses':courses})
+    subjects=Subject.objects.all()
+    return render(request,'admin_mg_subject.html',{'courses':courses ,'subjects':subjects})
 
 
 def add_subject(request):
@@ -540,7 +553,7 @@ def delete_course(request, course_no):
     
     return redirect('ManageCourse')  # Redirect back to the course management page
 
-def edit_subject(request, subject_no):
+def edit_subject(request ,subject_no):
     subject = get_object_or_404(Subject, id=subject_no)
     
     if request.method == "POST":
