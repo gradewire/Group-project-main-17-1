@@ -435,9 +435,10 @@ def add_subject(request):
     # If the request is GET, pass the list of courses to the template
     return render(request, 'admin_mg_subject.html', {'courses': courses})
 
-
+@login_required
 def student_profile_view(request):
-    return render(request,'stdnt_profile.html')
+    students =Student.objects.all()
+    return render(request,'stdnt_profile.html', {'students': students})
 
 def student_grades_view(request):
     return render(request,'stdnt_grades.html')
